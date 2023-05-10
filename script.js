@@ -1,6 +1,9 @@
+var xhr = new XMLHttpRequest();
+xhr.open("GET", "fuentes/Data_Equipos.xlsx", true);
+xhr.responseType = "arraybuffer";
+
 let cars = document.querySelectorAll('.car');
 let carsContainer = document.querySelector('#cars-container');
-
     let currentCar = null;
 
     cars.forEach(car => {
@@ -49,17 +52,24 @@ document.addEventListener('mouseup', function(e) {
 
 let carText = document.querySelector('#car-text');
 
-function addCar(color, size, lon) {
+function addCar(color, size, lon,carText) {
     let car = document.createElement('div');
     car.classList.add('car');
     const carName = document.createElement('h2');
     carName.classList.add('car-name');
-    carName.textContent = ' ';
     car.style.backgroundColor = color;
-    car.style.width = lon + 'px';
-    car.style.height = size + 'px';
-    car.textContent = carText.value; // Agregar el texto ingresado en el campo de texto
-    carsContainer.appendChild(car);
+    car.style.width = size/75 + 'px';
+    car.style.height = lon/80 + 'px';
+    car.style.left = '100px'; // agregar esta línea
+    car.style.top = '100px'; // agregar esta línea
+    carText = sizeSelect.options[sizeSelect.selectedIndex].textContent.split('-')[0];
+    car.textContent = carText; // Agregar el texto ingresado en el campo de texto
+    const factor = 0.5; // Ajustar este valor para cambiar el tamaño del texto
+    const fontSize = car.offsetWidth / car.textContent.length * factor;
+    carName.style.fontSize = fontSize + 'px'; // Aplicar el tamaño de texto calculado
+    carName.textContent = carText.split('-')[0];
+    car.appendChild(carName);
+    carsContainer.appendChild(car)
 
     // Agregar controlador del evento mousedown al nuevo bloque .car
     car.addEventListener('mousedown', function(e) {
@@ -75,6 +85,7 @@ function addCar(color, size, lon) {
     <li><i class="fas fa-edit"></i> Cambiar nombre</li>
     <li><i class="fas fa-trash"></i> Eliminar</li>
     <li><i class="fas fa-user-cog"></i> Asignar técnico</li>
+    <li><i class="fas fa-user-cog"></i> Rotar </li>
   </ul>
     `;
 
@@ -117,11 +128,63 @@ menu.addEventListener('click', (event) => {
   });
 }
 
-let sizeSelect = document.querySelector('#size-select');
-
+let sizeSelect = document.getElementById("size-select");
 addCarButton.addEventListener('click', function() {
-    let size = sizeSelect.value;
-    let lon = sizeSelect.options[sizeSelect.selectedIndex].getAttribute('lon');;
-    let color = sizeSelect.options[sizeSelect.selectedIndex].getAttribute('data-color');
-    addCar(color, size,lon);
+  let selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
+  if (!selectedOption) {
+    console.log('Por favor seleccione un equipo');
+    return;
+  }
+  let carText = selectedOption.textContent;
+  let size = sizeSelect.options[sizeSelect.selectedIndex].getAttribute('size');
+  let lon = sizeSelect.options[sizeSelect.selectedIndex].getAttribute('lon');
+  let color = sizeSelect.options[sizeSelect.selectedIndex].getAttribute('data-color');
+  addCar(color, size, lon, carText);
+});
+
+var xhr = new XMLHttpRequest();
+xhr.open("GET", "fuentes/Data_Equipos.csv", true);
+xhr.onreadystatechange = function() {
+  if (xhr.readyState === 4 && xhr.status === 200) {
+    var lines = xhr.responseText.split("\n");
+    var select = document.getElementById("size-select");
+    for (var i = 0; i < lines.length; i++) {
+      var parts = lines[i].split(";");
+      if (parts.length >= 1) {
+        var option = document.createElement("option");
+        option.value = parts[0];
+        option.textContent = parts[0]; // solo muestra el texto antes del guión
+        option.setAttribute("size", parts[1]);
+        option.setAttribute("lon", parts[2]);
+        option.setAttribute("data-color", parts[3]);
+        select.appendChild(option);
+      }
+    }
+
+    var filterInput = document.getElementById("filter-input");
+    filterInput.addEventListener("input", function() {
+      var filterValue = this.value.toLowerCase(); // convierte el texto en minúsculas
+      var options = select.getElementsByTagName("option");
+      for (var i = 0; i < options.length; i++) {
+        var text = options[i].textContent.toLowerCase(); // convierte el texto en minúsculas
+        if (text.startsWith(filterValue)) {
+          options[i].style.display = ""; // muestra el elemento
+        } else {
+          options[i].style.display = "none"; // oculta el elemento
+        }
+      }
+    });
+  }
+};
+xhr.send();
+
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Verifica si el archivo de Excel se ha cargado
+  if (typeof xhr !== 'undefined') {
+    console.log('El archivo de Excel se ha cargado exitosamente.');
+    console.log(xhr)
+  } else {
+    console.log('El archivo de Excel no se ha cargado.');
+  }
 });
