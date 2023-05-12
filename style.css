@@ -26,13 +26,12 @@ body {
   width: 120px;
   top: 100%;
   left: 50%;
-  transform: translateX(-50%);
+  /* transform: translateX(-50%); */
   background-color: #f4a460;
   border: 1px solid #fff;
   border-radius: 3px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
   padding: 10px;
-  display: none;
   z-index: 1;
   color: #fff;
   font-family: 'Lilita One', sans-serif;
@@ -166,3 +165,46 @@ select#size-select option:checked {
   color: #fff;
   font-family: 'Lilita One', sans-serif;
 }
+
+.menu-item-naranja {
+  background-color: orange;
+  color: white;
+  padding: 10px;
+  border-radius: 100%;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.menu-item-blanco {
+  background-color: white;
+  color: black;
+  padding: 10px;
+  border-radius: 100%;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.menu-item-transparente {
+  color: black;
+  padding: 10px;
+  border-radius: 100%;
+  height: 50px;
+  width: 50px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.car-menu-horizontal ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.car-menu-horizontal li {
+  display: inline-block;
+  margin: 0 1px;
+  cursor: pointer;
+}
+
+
+
+
+

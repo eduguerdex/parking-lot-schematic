@@ -58,8 +58,8 @@ function addCar(color, size, lon,carText) {
     const carName = document.createElement('h2');
     carName.classList.add('car-name');
     car.style.backgroundColor = color;
-    car.style.width = size/75 + 'px';
-    car.style.height = lon/80 + 'px';
+    car.style.width = size/115 + 'px';
+    car.style.height = lon/90 + 'px';
     car.style.left = '100px'; // agregar esta línea
     car.style.top = '100px'; // agregar esta línea
     carText = sizeSelect.options[sizeSelect.selectedIndex].textContent.split('-')[0];
@@ -77,18 +77,31 @@ function addCar(color, size, lon,carText) {
         car.style.zIndex = 1000;
     });
   car.addEventListener('dblclick', event => {
-    // Mostrar el menú
+    const rotation = getRotationDegrees(car);
+    // Crear el menú
     const menu = document.createElement('div');
-    menu.classList.add('car-menu'); 
+    menu.classList.add('car-menu');
+    menu.style.transform = `rotate(-${rotation}deg)`; // Establecer la propiedad transform
     menu.innerHTML = `
        <ul>
     <li><i class="fas fa-edit"></i> Cambiar nombre</li>
     <li><i class="fas fa-trash"></i> Eliminar</li>
     <li><i class="fas fa-user-cog"></i> Asignar técnico</li>
-    <li><i class="fas fa-user-cog"></i> Rotar </li>
+    <li><i class="fas fa-undo"></i> Rotar </li>
   </ul>
     `;
-
+// Función para obtener el ángulo de rotación de un elemento
+function getRotationDegrees(element) {
+  const matrix = window.getComputedStyle(element).getPropertyValue('transform');
+  if (matrix === 'none') {
+    return 0;
+  }
+  const values = matrix.split('(')[1].split(')')[0].split(',');
+  const a = values[0];
+  const b = values[1];
+  const angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+  return angle >= 0 ? angle : 360 + angle;
+}
 car.appendChild(carName);
 car.appendChild(menu);
 document.body.appendChild(car);
@@ -116,16 +129,92 @@ menu.addEventListener('click', (event) => {
         car.appendChild(asignacion);
   
       }
-      break;
+      break;      
+    case 'Rotar':
+      // Crear el menú de rotación
+      const menuRotacion = document.createElement('div');
+      menuRotacion.classList.add('car-menu-rotacion');
+      menuRotacion.innerHTML = `
+      <ul class="car-menu-horizontal">
+      <li class="menu-item-blanco" data-angulo="0"><i class="fas fa-angle-right"></i>0°</li>
+      <li class="menu-item-naranja" data-angulo="270"><i class="fas fa-angle-down"></i>270°</li>
+      <li class="menu-item-blanco" data-angulo="-45"><i class="fas fa-redo-alt"></i>-45°</li>
+      <li class="menu-item-naranja" data-angulo="180"><i class="fas fa-angle-left"></i>180°</li>
+      <li class="menu-item-blanco" data-angulo="45"><i class="fas fa-undo-alt"></i>45°</li>
+      <li class="menu-item-naranja" data-angulo="90"><i class="fas fa-angle-up"></i>90°</li>
+    </ul>
+      `;
+      // Definir el radio del menú
+      const radio = 70;
+
+      // Establecer el estilo del menú de rotación
+      const menuRotacionStyles = `
+        position: relative;
+        height: 200px;
+        width: 200px;
+        top: ${car.offsetTop -1900}px;
+        left: ${car.offsetLeft -106}px;
+        color: white;
+        padding: 10px;
+        z-index: 999;
+        border-radius: 50%;
+      `;
+      menuRotacion.style.cssText = menuRotacionStyles;
+
+      // Ajustar el tamaño y la posición de los elementos del menú
+      const menuItemStyles = `
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 12px;
+      `;
+      const menuItems = menuRotacion.querySelectorAll('li');
+      menuItems.forEach((item, index) => {
+        item.style.cssText = menuItemStyles;
+      });
+      const totalItems = menuItems.length;
+      // Calcular el ángulo entre cada elemento en radianes
+      const slice = (2 * Math.PI) / totalItems;
+      // Recorrer cada elemento y calcular su posición
+      menuItems.forEach((item, index) => {
+        // Calcular el ángulo del elemento actual
+        const angle = slice * index;
+        // Calcular la posición del elemento en función del ángulo y el radio
+        const x = Math.round(radio * Math.cos(angle));
+        const y = Math.round(radio * Math.sin(angle));
+        // Establecer la posición del elemento
+        item.style.transform = `translate(${x}px, ${y}px)`;
+      });
+      
+      // Agregar el menú de rotación al cuerpo del documento
+      document.body.appendChild(menuRotacion);
+      menu.remove();
+
+      // Agregar evento de clic a las opciones del menú de rotación
+      menuRotacion.querySelectorAll('li').forEach((opcion) => {
+        opcion.addEventListener('click', (event) => {
+          const angulo = parseInt(event.target.getAttribute('data-angulo'));
+          car.style.transform = `rotate(${angulo}deg)`;
+        });
+      });
+  break;  
   }
 });
    // Event listener para cerrar el menú al hacer clic fuera de él
-  carsContainer.addEventListener('click', event => {
+  carsContainer.addEventListener('mousedown', event => {
     if (!menu.contains(event.target)) {
       menu.remove();
     }
   });
+  document.addEventListener('mousedown', (event) => {
+    // Verificar si el clic fue fuera del menú de rotación
+    const menuRotacion = document.querySelector('.car-menu-rotacion');
+    if (menuRotacion && !menuRotacion.contains(event.target)) {
+      menuRotacion.remove();
+    }
   });
+    });
 }
 
 let sizeSelect = document.getElementById("size-select");
@@ -188,3 +277,4 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log('El archivo de Excel no se ha cargado.');
   }
 });
+
