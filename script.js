@@ -1,7 +1,3 @@
-var xhr = new XMLHttpRequest();
-xhr.open("GET", "fuentes/Data_Equipos.xlsx", true);
-xhr.responseType = "arraybuffer";
-
 let cars = document.querySelectorAll('.car');
 let carsContainer = document.querySelector('#cars-container');
     let currentCar = null;
@@ -233,6 +229,7 @@ addCarButton.addEventListener('click', function() {
 
 var xhr = new XMLHttpRequest();
 xhr.open("GET", "fuentes/Data_Equipos.csv", true);
+
 xhr.onreadystatechange = function() {
   if (xhr.readyState === 4 && xhr.status === 200) {
     var lines = xhr.responseText.split("\n");
@@ -266,7 +263,6 @@ xhr.onreadystatechange = function() {
   }
 };
 xhr.send();
-
 
 window.addEventListener('DOMContentLoaded', () => {
   // Verifica si el archivo de Excel se ha cargado
