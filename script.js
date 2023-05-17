@@ -84,6 +84,7 @@ function addCar(color, size, lon,carText) {
     <li><i class="fas fa-trash"></i> Eliminar</li>
     <li><i class="fas fa-user-cog"></i> Asignar técnico</li>
     <li><i class="fas fa-undo"></i> Rotar </li>
+    <li><i class="fas fa-share"></i> Trasladar </li>
   </ul>
     `;
 // Función para obtener el ángulo de rotación de un elemento
@@ -274,3 +275,99 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+const SpreadsheetId='1Cf2y_StfLyOHigTZF02R3OVyHEPFNNFt00PS6HD5A_k'
+
+function guardarEnGoogleSheets() {
+  // Obtener la fecha y hora actual
+  const fechaHora = new Date().toLocaleString();
+
+  // Obtener los datos de los elementos .car
+  const elementos = document.getElementsByClassName('car');
+  const datos = [];
+
+  for (let i = 0; i < elementos.length; i++) {
+    const elemento = elementos[i];
+    const equipoElemento = elemento.querySelector('h2.car-name');
+    const equipo = equipoElemento.textContent.trim();
+    const size = parseFloat(elemento.style.width);
+    const lon = parseFloat(elemento.style.height);
+    const color = elemento.style.backgroundColor;
+    const left = elemento.style.left;
+    const top = elemento.style.top;
+    const transform = getComputedStyle(elemento).transform;
+    const orientacion = transform !== 'none' ? transform : 'rotate(0deg)';
+
+    // Agregar los datos a la lista
+    datos.push([fechaHora, equipo, size, lon, color, left, top, orientacion]);
+  }
+
+  // Llamar a la función para enviar los datos a Google Sheets
+  enviarDatosAGoogleSheets(datos);
+}
+
+// Función para enviar los datos a Google Sheets
+function enviarDatosAGoogleSheets(datos) {
+  // ID de la hoja de cálculo
+  const spreadsheetId = '1Cf2y_StfLyOHigTZF02R3OVyHEPFNNFt00PS6HD5A_k';
+  // Rango en el que se insertarán los datos (por ejemplo, A1:H1)
+  const range = 'Ubicaciones!A2:H2';
+
+  // Objeto de solicitud para la API de Google Sheets
+  const request = {
+    spreadsheetId: spreadsheetId,
+    range: range,
+    valueInputOption: 'USER_ENTERED',
+    resource: {
+      values: datos
+    }
+  };
+
+  // Llamada a la API para insertar los datos
+  gapi.client.sheets.spreadsheets.values.append(request)
+    .then(function(response) {
+      console.log('Datos agregados a Google Sheets:', response);
+    }, function(error) {
+      console.error('Error al agregar los datos a Google Sheets:', error);
+    });
+}
+async function ObtenerEquipos() {
+  // Obtener la fecha seleccionada
+  const fechaSeleccionada = document.getElementById('fecha').value;
+
+  let response;
+  try {
+    // Obtener los datos del rango completo
+    response = await gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId: SpreadsheetId,
+      range: 'Ubicaciones!A:H',
+    });
+  } catch (err) {
+    console.error(err);
+    return;
+  }
+
+  const range = response.result;
+  if (!range || !range.values || range.values.length == 0) {
+    console.warn("No values found");
+    return;
+  }
+
+  // Filtrar los equipos por fecha
+  const equiposFiltrados = range.values.filter(row => {
+    // La fecha está en la primera columna (índice 0)
+    const fechaEquipo = row[0]; // Ajustar el índice si es necesario
+    const fechaHora = fechaEquipo.split(',')[0].trim();
+    console.log(fechaSeleccionada)
+    console.log(fechaHora)
+    return fechaHora === fechaSeleccionada;
+  });
+
+  // Mostrar los equipos filtrados en el elemento con id 'content'
+  const contentElement = document.getElementById('content');
+  contentElement.innerText = '';
+
+  equiposFiltrados.forEach(row => {
+    const equipo = row[1]; // Ajustar el índice si es necesario
+    contentElement.innerText += equipo + '\n';
+  });
+}

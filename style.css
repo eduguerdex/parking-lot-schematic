@@ -205,6 +205,19 @@ select#size-select option:checked {
 }
 
 
+.boton {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
 
+}
+
+.boton:hover {
+  background-color: orange;
+}
 
 
