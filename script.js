@@ -275,70 +275,30 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-const SpreadsheetId='1Cf2y_StfLyOHigTZF02R3OVyHEPFNNFt00PS6HD5A_k'
-
-function guardarEnGoogleSheets() {
-  // Obtener la fecha y hora actual
-  const fechaHora = new Date().toLocaleString();
-
-  // Obtener los datos de los elementos .car
-  const elementos = document.getElementsByClassName('car');
-  const datos = [];
-
-  for (let i = 0; i < elementos.length; i++) {
-    const elemento = elementos[i];
-    const equipoElemento = elemento.querySelector('h2.car-name');
-    const equipo = equipoElemento.textContent.trim();
-    const size = parseFloat(elemento.style.width);
-    const lon = parseFloat(elemento.style.height);
-    const color = elemento.style.backgroundColor;
-    const left = elemento.style.left;
-    const top = elemento.style.top;
-    const transform = getComputedStyle(elemento).transform;
-    const orientacion = transform !== 'none' ? transform : 'rotate(0deg)';
-
-    // Agregar los datos a la lista
-    datos.push([fechaHora, equipo, size, lon, color, left, top, orientacion]);
+function convertirFecha(fecha) {
+  const partes = fecha.split('-');
+  const dia = partes[2];
+  let mes = partes[1];
+  if (mes.startsWith('0')) {
+    mes = mes.substring(1);
   }
-
-  // Llamar a la función para enviar los datos a Google Sheets
-  enviarDatosAGoogleSheets(datos);
+  const anio = partes[0];
+  const fechaConvertida = `${dia}/${mes}/${anio}`;
+  return fechaConvertida;
 }
 
-// Función para enviar los datos a Google Sheets
-function enviarDatosAGoogleSheets(datos) {
-  // ID de la hoja de cálculo
-  const spreadsheetId = '1Cf2y_StfLyOHigTZF02R3OVyHEPFNNFt00PS6HD5A_k';
-  // Rango en el que se insertarán los datos (por ejemplo, A1:H1)
-  const range = 'Ubicaciones!A2:H2';
-
-  // Objeto de solicitud para la API de Google Sheets
-  const request = {
-    spreadsheetId: spreadsheetId,
-    range: range,
-    valueInputOption: 'USER_ENTERED',
-    resource: {
-      values: datos
-    }
-  };
-
-  // Llamada a la API para insertar los datos
-  gapi.client.sheets.spreadsheets.values.append(request)
-    .then(function(response) {
-      console.log('Datos agregados a Google Sheets:', response);
-    }, function(error) {
-      console.error('Error al agregar los datos a Google Sheets:', error);
-    });
-}
+const ShID = '1Cf2y_StfLyOHigTZF02R3OVyHEPFNNFt00PS6HD5A_k';
 async function ObtenerEquipos() {
   // Obtener la fecha seleccionada
   const fechaSeleccionada = document.getElementById('fecha').value;
+  const fechaFormateada = convertirFecha(fechaSeleccionada);
+  console.log(fechaFormateada);
 
   let response;
   try {
     // Obtener los datos del rango completo
     response = await gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: SpreadsheetId,
+      spreadsheetId: ShID,
       range: 'Ubicaciones!A:H',
     });
   } catch (err) {
@@ -357,9 +317,9 @@ async function ObtenerEquipos() {
     // La fecha está en la primera columna (índice 0)
     const fechaEquipo = row[0]; // Ajustar el índice si es necesario
     const fechaHora = fechaEquipo.split(',')[0].trim();
-    console.log(fechaSeleccionada)
-    console.log(fechaHora)
-    return fechaHora === fechaSeleccionada;
+    console.log(fechaFormateada)
+    console.log(fechaHora === fechaFormateada)
+    return fechaHora === fechaFormateada;
   });
 
   // Mostrar los equipos filtrados en el elemento con id 'content'
@@ -367,7 +327,144 @@ async function ObtenerEquipos() {
   contentElement.innerText = '';
 
   equiposFiltrados.forEach(row => {
-    const equipo = row[1]; // Ajustar el índice si es necesario
+    const equipo = row[2]; // Ajustar el índice si es necesario
     contentElement.innerText += equipo + '\n';
   });
 }
+function guardarEnGoogleSheets() {
+  // Obtener la fecha y hora actual
+  const fechaHora = new Date();
+  const fechaActual = fechaHora.toLocaleDateString('es-ES');
+  const horaActual = fechaHora.toLocaleTimeString('es-ES');
+  // Obtener los datos de los elementos .car
+  const elementos = document.getElementsByClassName('car');
+  const datos = [];
+
+  for (let i = 0; i < elementos.length; i++) {
+    const elemento = elementos[i];
+    const equipoElemento = elemento.querySelector('h2.car-name');
+    const equipo = equipoElemento.textContent.trim();
+    const size = parseFloat(elemento.style.width);
+    const lon = parseFloat(elemento.style.height);
+    const color = elemento.style.backgroundColor;
+    const left = elemento.style.left;
+    const top = elemento.style.top;
+    const transform = getComputedStyle(elemento).transform;
+    const orientacion = transform !== 'none' ? transform : 'rotate(0deg)';
+
+    // Agregar los datos a la lista
+    datos.push([fechaActual,horaActual, equipo, size, lon, color, left, top, orientacion]);
+  }
+    console.log(datos)
+    enviarDatosAGoogleSheets(datos);
+}
+
+function enviarDatosAGoogleSheets(datos) {
+  const fechaHoraActual = new Date();
+  const fechaActual = fechaHoraActual.toLocaleDateString('es-ES');
+  const horaActual = fechaHoraActual.toLocaleTimeString('es-ES');
+  const range = 'Ubicaciones!A:H';
+  const request = {
+    spreadsheetId: ShID,
+    range: range,
+    valueInputOption: 'USER_ENTERED',
+    resource: {
+      values: datos
+    }
+  };
+  gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId: ShID,
+    range: range
+  }).then(function(response) {
+    const range = response.result;
+    if (!range || !range.values || range.values.length === 0) {
+      // No hay filas, agregar una nueva
+      gapi.client.sheets.spreadsheets.values.append({
+        spreadsheetId: ShID,
+        range: range,
+        valueInputOption: 'USER_ENTERED',
+        resource: {
+          values: [datos],
+        },
+      });
+    } else {
+      let filasActualizar = [];
+      for (let i = 0; i < range.values.length; i++) {
+        const fila = range.values[i];
+        const fechaFila = fila[0];
+        if (fechaFila === fechaActual) {
+          filasActualizar.push(i);
+        }
+      }
+
+      if (filasActualizar.length > 0) {
+        // Construir la solicitud de eliminación de filas
+        const deleteRequest = {
+          spreadsheetId: ShID,
+          resource: {
+            requests: [
+              {
+                deleteRange: {
+                  range: {
+                    sheetId: 0, // Identificador de la hoja de cálculo, puede variar
+                    startRowIndex: filasActualizar[0], // Índice de la primera fila a eliminar
+                    endRowIndex: filasActualizar[filasActualizar.length - 1] + 1 // Índice de la última fila a eliminar + 1
+                  },
+                  shiftDimension: 'ROWS'
+                }
+              }
+            ]
+          }
+        };
+      // Realizar la solicitud de eliminación de filas
+      gapi.client.sheets.spreadsheets.batchUpdate(deleteRequest)
+      .then(function(response) {
+        // Agregar una nueva fila al final
+        range.values.push(datos[0]);
+
+        // Actualizar los datos en Google Sheets
+        gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId: ShID,
+          range: range,
+          valueInputOption: 'USER_ENTERED',
+          resource: {
+            values: range.values,
+          },
+        }).then(function(response) {
+          console.log('Datos actualizados en Google Sheets:', response);
+        }).catch(function(error) {
+          console.error('Error al actualizar los datos en Google Sheets:', error);
+        });
+      })
+      .catch(function(error) {
+        console.error('Error al eliminar las filas en Google Sheets:', error);
+      });
+      // Actualizar los datos en Google Sheets
+      gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId: ShID,
+        range: range,
+        valueInputOption: 'USER_ENTERED',
+        resource: {
+          values: range.values,
+        },
+      });
+    }}
+  }).catch(function(error) {
+    console.error('Error al obtener los datos de Google Sheets:', error);
+  });
+
+  gapi.client.sheets.spreadsheets.values.append(request)
+    .then(function(response) {
+      console.log('Datos agregados a Google Sheets:', response);
+    }).catch(function(error) {
+      console.error('Error al agregar los datos a Google Sheets:', error);
+    });
+}
+
+
+
+
+
+
+
+

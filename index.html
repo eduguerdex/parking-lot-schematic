@@ -62,7 +62,7 @@
   <input type="date" id="fecha">
   <button id="buscar-equipo" onclick="ObtenerEquipos()"><i class="fas fa-search"></i> Buscar equipos</button>
   <!--Add buttons to initiate auth sequence and sign out-->
-  <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+  <button id="authorize_button" onclick="handleAuthClick()">Autorizar</button>
   <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
   <pre id="content" style="white-space: pre-wrap;"></pre>
@@ -73,3 +73,107 @@
 </body>
 
 </html>
+<!-- function enviarDatosAGoogleSheets(datos) {
+  const fechaHoraActual = new Date();
+  const fechaActual = fechaHoraActual.toLocaleDateString('es-ES');
+  const horaActual = fechaHoraActual.toLocaleTimeString('es-ES');
+  const range = 'Ubicaciones!A:H';
+  const request = {
+    spreadsheetId: ShID,
+    range: range,
+    valueInputOption: 'USER_ENTERED',
+    resource: {
+      values: datos
+    }
+  };
+  gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId: ShID,
+    range: range
+  }).then(function(response) {
+    const range = response.result;
+    if (!range || !range.values || range.values.length === 0) {
+      // No hay filas, agregar una nueva
+      gapi.client.sheets.spreadsheets.values.append({
+        spreadsheetId: ShID,
+        range: range,
+        valueInputOption: 'USER_ENTERED',
+        resource: {
+          values: [datos],
+        },
+      });
+    } else {
+      let filasActualizar = [];
+      for (let i = 0; i < range.values.length; i++) {
+        const fila = range.values[i];
+        const fechaFila = fila[0];
+        if (fechaFila === fechaActual) {
+          filasActualizar.push(i);
+        }
+      }
+
+      if (filasActualizar.length > 0) {
+        // Construir la solicitud de eliminación de filas
+        const deleteRequest = {
+          spreadsheetId: ShID,
+          resource: {
+            requests: [
+              {
+                deleteRange: {
+                  range: {
+                    sheetId: 0, // Identificador de la hoja de cálculo, puede variar
+                    startRowIndex: filasActualizar[0], // Índice de la primera fila a eliminar
+                    endRowIndex: filasActualizar[filasActualizar.length - 1] + 1 // Índice de la última fila a eliminar + 1
+                  },
+                  shiftDimension: 'ROWS'
+                }
+              }
+            ]
+          }
+        };
+
+        // Realizar la solicitud de eliminación de filas
+        gapi.client.sheets.spreadsheets.batchUpdate(deleteRequest)
+          .then(function(response) {
+            // Agregar una nueva fila al final
+            range.values.push(datos[0]);
+
+            // Actualizar los datos en Google Sheets
+            gapi.client.sheets.spreadsheets.values.update({
+              spreadsheetId: ShID,
+              range: range,
+              valueInputOption: 'USER_ENTERED',
+              resource: {
+                values: range.values,
+              },
+            }).then(function(response) {
+              console.log('Datos actualizados en Google Sheets:', response);
+            }).catch(function(error) {
+              console.error('Error al actualizar los datos en Google Sheets:', error);
+            });
+          })
+          .catch(function(error) {
+            console.error('Error al eliminar las filas en Google Sheets:', error);
+          });
+      } else {
+        // Agregar una nueva fila al final
+        range.values.push(datos[0]);
+
+        // Actualizar los datos en Google Sheets
+        gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId: ShID,
+          range: range,
+          valueInputOption: 'USER_ENTERED',
+          resource: {
+            values: range.values,
+          },
+        }).then(function(response) {
+          console.log('Datos actualizados en Google Sheets:', response);
+        }).catch(function(error) {
+          console.error('Error al actualizar los datos en Google Sheets:', error);
+        });
+      }
+    }
+  }).catch(function(error) {
+    console.error('Error al obtener los datos de Google Sheets:', error);
+  });
+} -->
