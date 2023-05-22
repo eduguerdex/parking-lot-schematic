@@ -48,7 +48,7 @@ document.addEventListener('mouseup', function(e) {
 
 let carText = document.querySelector('#car-text');
 
-function addCar(color, size, lon,carText) {
+function addCar(color, size, lon,carText,left,top,orientacion) {
     let car = document.createElement('div');
     car.classList.add('car');
     const carName = document.createElement('h2');
@@ -56,10 +56,10 @@ function addCar(color, size, lon,carText) {
     car.style.backgroundColor = color;
     car.style.width = size/115 + 'px';
     car.style.height = lon/90 + 'px';
-    car.style.left = '100px'; // agregar esta línea
-    car.style.top = '100px'; // agregar esta línea
-    carText = sizeSelect.options[sizeSelect.selectedIndex].textContent.split('-')[0];
-    car.textContent = carText; // Agregar el texto ingresado en el campo de texto
+    car.style.left = left; // agregar esta línea
+    car.style.top = top; // agregar esta línea
+    car.style.transform=orientacion;
+    car.textContent = carText.split('-')[0];
     const factor = 0.5; // Ajustar este valor para cambiar el tamaño del texto
     const fontSize = car.offsetWidth / car.textContent.length * factor;
     carName.style.fontSize = fontSize + 'px'; // Aplicar el tamaño de texto calculado
@@ -225,7 +225,10 @@ addCarButton.addEventListener('click', function() {
   let size = sizeSelect.options[sizeSelect.selectedIndex].getAttribute('size');
   let lon = sizeSelect.options[sizeSelect.selectedIndex].getAttribute('lon');
   let color = sizeSelect.options[sizeSelect.selectedIndex].getAttribute('data-color');
-  addCar(color, size, lon, carText);
+  let left=sizeSelect.options[sizeSelect.selectedIndex].getAttribute('LEFT')
+  let top=sizeSelect.options[sizeSelect.selectedIndex].getAttribute('TOP')
+  let orientacion=0;
+  addCar(color, size, lon, carText,left,top,orientacion);
 });
 
 var xhr = new XMLHttpRequest();
@@ -244,6 +247,8 @@ xhr.onreadystatechange = function() {
         option.setAttribute("size", parts[1]);
         option.setAttribute("lon", parts[2]);
         option.setAttribute("data-color", parts[3]);
+        option.setAttribute("LEFT", parts[4]);
+        option.setAttribute("TOP", parts[5]);
         select.appendChild(option);
       }
     }
@@ -288,30 +293,54 @@ function convertirFecha(fecha) {
 }
 
 const ShID = '1Cf2y_StfLyOHigTZF02R3OVyHEPFNNFt00PS6HD5A_k';
-async function ObtenerEquipos() {
+
+function ObtenerFecha() {
+  // Mostrar cuadro de entrada de fecha
+  var bloqueFecha = document.getElementById("select-fecha");
+  var inputFecha = document.getElementById("fecha");
+  // Mostrar el calendario de fecha
+  bloqueFecha.style.visibility = 'visible';
+  inputFecha.style.visibility = 'visible';
+
+  // Verificar si se ingresó una fecha válida
+  inputFecha.addEventListener("change", function() {
+    // Obtener la fecha seleccionada
+    var fecha = inputFecha.value;
+    // Verificar si se seleccionó una fecha válida
+    if (fecha !== "") {
+      // Llamar a la función CargarEquipos() con la fecha seleccionada
+      bloqueFecha.style.visibility = 'hidden';
+      inputFecha.style.visibility = 'hidden';
+      var cars = document.querySelectorAll('.car');
+      cars.forEach(function(car) {
+        car.remove();
+      });
+      ObtenerEquipos(fecha);
+    }
+  });
+}
+async function ObtenerEquipos(fecha) {
   // Obtener la fecha seleccionada
-  const fechaSeleccionada = document.getElementById('fecha').value;
+  const fechaSeleccionada = fecha;
+  var bloqueFecha = document.getElementById("select-fecha");
   const fechaFormateada = convertirFecha(fechaSeleccionada);
   console.log(fechaFormateada);
-
   let response;
   try {
     // Obtener los datos del rango completo
     response = await gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: ShID,
-      range: 'Ubicaciones!A:H',
+      range: 'Ubicaciones!A:I',
     });
   } catch (err) {
     console.error(err);
     return;
   }
-
   const range = response.result;
   if (!range || !range.values || range.values.length == 0) {
     console.warn("No values found");
     return;
   }
-
   // Filtrar los equipos por fecha
   const equiposFiltrados = range.values.filter(row => {
     // La fecha está en la primera columna (índice 0)
@@ -328,6 +357,14 @@ async function ObtenerEquipos() {
 
   equiposFiltrados.forEach(row => {
     const equipo = row[2]; // Ajustar el índice si es necesario
+    let carText = row[2];
+    let size = row[3];
+    let lon = row[4];
+    let color = row[5];
+    let left = row[6];
+    let top = row[7];
+    let orientation = row[8];
+    addCar(color, size, lon, carText,left,top,orientation);
     contentElement.innerText += equipo + '\n';
   });
 }
@@ -344,14 +381,13 @@ function guardarEnGoogleSheets() {
     const elemento = elementos[i];
     const equipoElemento = elemento.querySelector('h2.car-name');
     const equipo = equipoElemento.textContent.trim();
-    const size = parseFloat(elemento.style.width);
-    const lon = parseFloat(elemento.style.height);
+    const size = parseFloat(elemento.style.width)*115;
+    const lon = parseFloat(elemento.style.height)*90;
     const color = elemento.style.backgroundColor;
     const left = elemento.style.left;
     const top = elemento.style.top;
-    const transform = getComputedStyle(elemento).transform;
+    const transform = elemento.style.transform;
     const orientacion = transform !== 'none' ? transform : 'rotate(0deg)';
-
     // Agregar los datos a la lista
     datos.push([fechaActual,horaActual, equipo, size, lon, color, left, top, orientacion]);
   }
@@ -363,7 +399,7 @@ function enviarDatosAGoogleSheets(datos) {
   const fechaHoraActual = new Date();
   const fechaActual = fechaHoraActual.toLocaleDateString('es-ES');
   const horaActual = fechaHoraActual.toLocaleTimeString('es-ES');
-  const range = 'Ubicaciones!A:H';
+  const range = 'Ubicaciones!A:I';
   const request = {
     spreadsheetId: ShID,
     range: range,
