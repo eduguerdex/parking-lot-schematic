@@ -1,6 +1,10 @@
+const icaroSection = "AV. ICARO 154 URB. LA CAMPIÑA - CHORRILLOS - LIMA";
+const lurinSection = "CAR. EXPLOSIVOS UC..10886 EX FUNDO HUARANGAL - LURIN - LIMA";
+const chinchaSection = "CARR PANAMERICANA SUR NRO 204 EL CARMEN-CHINCHA BAJA-ICA";
+const arequipaSection = "MZA. G LT 10 SEC. PARQUE INDUSTRIAL RIO SECO I ETAPA-CERRO COLORADO-AREQUIPA"
 let cars = document.querySelectorAll('.car');
 let carsContainer = document.querySelector('#cars-container');
-    let currentCar = null;
+let currentCar = null;
 
     cars.forEach(car => {
         car.addEventListener('mousedown', function(e) {
@@ -19,6 +23,15 @@ let carsContainer = document.querySelector('#cars-container');
 
         // Obtener la lista de todos los bloques .car
         let cars = document.querySelectorAll('.car');
+        let newX = e.pageX - currentCar.offsetWidth / 2;
+        let newY = e.pageY - currentCar.offsetHeight / 2;
+
+        let section1 = document.getElementById('ICARO');
+        let section2 = document.getElementById('LURIN');
+        let section3 = document.getElementById('CHINCHA');
+        let section1Rect = section1.getBoundingClientRect();
+        let section2Rect = section2.getBoundingClientRect();
+        let section3Rect = section3.getBoundingClientRect();
 
         for (let car of cars) {
             if (currentCar === car) continue;
@@ -28,12 +41,51 @@ let carsContainer = document.querySelector('#cars-container');
 
             if (rect.left < currentRect.right && rect.right > currentRect.left &&
                 rect.top < currentRect.bottom && rect.bottom > currentRect.top) {
-
                 // Collision detected!
                 // Move the block back to its previous position
                 currentCar.style.left = prevX + 'px';
                 currentCar.style.top = prevY + 'px';
                 break;
+            }
+            else{
+              // Ajustar los límites de las secciones considerando el desplazamiento vertical
+            const section1Top = section1Rect.top + window.pageYOffset;
+            const section1Bottom = section1Rect.bottom + window.pageYOffset;
+            const section2Top = section2Rect.top + window.pageYOffset;
+            const section2Bottom = section2Rect.bottom + window.pageYOffset;
+            const section3Top = section3Rect.top + window.pageYOffset;
+            const section3Bottom = section3Rect.bottom + window.pageYOffset;
+
+            if (
+              newX >= section1Rect.left &&
+              newX + currentCar.offsetWidth <= section1Rect.right &&
+              newY >= section1Top &&
+              newY + currentCar.offsetHeight <= section1Bottom
+            ) {
+              currentCar.style.left = newX + 'px';
+              currentCar.style.top = newY + 'px';
+            } else if (
+              newX >= section2Rect.left &&
+              newX + currentCar.offsetWidth <= section2Rect.right &&
+              newY >= section2Top &&
+              newY + currentCar.offsetHeight <= section2Bottom
+            ) {
+              currentCar.style.left = newX + 'px';
+              currentCar.style.top = newY + 'px';
+            } else if (
+              newX >= section3Rect.left &&
+              newX + currentCar.offsetWidth <= section3Rect.right &&
+              newY >= section3Top &&
+              newY + currentCar.offsetHeight <= section3Bottom
+            ) {
+              currentCar.style.left = newX + 'px';
+              currentCar.style.top = newY + 'px';
+            } else {
+              // El coche está fuera de las secciones, no se permitirá el movimiento
+              currentCar.style.left = prevX + 'px';
+              currentCar.style.top = prevY + 'px';
+            }  
+
             }
         }
     }
@@ -80,7 +132,7 @@ function addCar(color, size, lon,carText,left,top,orientacion) {
     menu.style.transform = `rotate(-${rotation}deg)`; // Establecer la propiedad transform
     menu.innerHTML = `
        <ul>
-    <li><i class="fas fa-edit"></i> Cambiar nombre</li>
+    <li><i class="fas fa-info-circle"></i> Info </li>
     <li><i class="fas fa-trash"></i> Eliminar</li>
     <li><i class="fas fa-user-cog"></i> Asignar técnico</li>
     <li><i class="fas fa-undo"></i> Rotar </li>
@@ -108,7 +160,7 @@ menu.addEventListener('click', (event) => {
   if (!buttonClicked) return;
 
   switch (buttonClicked.textContent.trim()) {
-    case 'Cambiar nombre':
+    case 'Info':
       const nuevoNombre = prompt('Ingrese el nuevo nombre:');
       if (nuevoNombre) {
        car.textContent = nuevoNombre;
@@ -149,8 +201,8 @@ menu.addEventListener('click', (event) => {
         position: relative;
         height: 200px;
         width: 200px;
-        top: ${car.offsetTop -1900}px;
-        left: ${car.offsetLeft -106}px;
+        top: ${car.offsetTop -1815}px;
+        left: ${car.offsetLeft -110}px;
         color: white;
         padding: 10px;
         z-index: 999;
@@ -196,6 +248,240 @@ menu.addEventListener('click', (event) => {
         });
       });
   break;  
+  case 'Trasladar':
+  // Crear el menú de traslación
+  const menuTraslacion = document.createElement('div');
+  menuTraslacion.classList.add('car-menu-traslacion');
+  menuTraslacion.innerHTML = `
+    <ul class="car-menu-horizontal">
+      <li class="menu-item-blanco" data-coordenadas="200, 200" value="AV. ICARO 154 URB. LA CAMPIÑA - CHORRILLOS - LIMA">ICARO</li>
+      <li class="menu-item-naranja" data-coordenadas="600, 200" value="CAR. EXPLOSIVOS UC..10886 EX FUNDO HUARANGAL - LURIN - LIMA">LURIN</li>
+      <li class="menu-item-blanco" data-coordenadas="700, 800" value="CARR PANAMERICANA SUR NRO 204 EL CARMEN-CHINCHA BAJA-ICA">CHINCHA</li>
+      <li class="menu-item-naranja" data-coordenadas="500, 570" value="MZA. G LT 10 SEC. PARQUE INDUSTRIAL RIO SECO I ETAPA-CERRO COLORADO-AREQUIPA">AREQUIPA</li>
+      <li class="menu-item-blanco" data-coordenadas="500, 570">ALQUILER</li>
+    </ul>
+  `;
+  // Establecer el estilo del menú de traslación
+  const menuTraslacionStyles = `
+    position: relative;
+    top: ${car.offsetTop -1710}px;
+    left: ${car.offsetLeft -200}px;
+    color: white;
+    padding: 10px;
+    z-index: 999;
+  `;
+  menuTraslacion.style.cssText = menuTraslacionStyles;
+  // Ajustar el tamaño y la posición de los elementos del menú
+  const menuItemStylesT = `
+    font-size: 12px;
+  `;
+  const menuItemsT = menuTraslacion.querySelectorAll('li');
+  menuItemsT.forEach((item) => {
+    item.style.cssText = menuItemStylesT;
+  });
+   // Agregar el menú de traslación al cuerpo del documento
+   document.body.appendChild(menuTraslacion);
+   menu.remove();
+   // Agregar evento de clic a las opciones del menú de traslación
+  menuTraslacion.querySelectorAll('li').forEach((opcion) => {
+    opcion.addEventListener('click', (event) => {
+      const coordenadas = event.target.getAttribute('data-coordenadas').split(', ');
+      // Mostrar cuadro de diálogo
+     // Obtener la sección actual del coche
+    const section = getSection(car);
+    if (section===opcion.textContent){
+      alert("No se puede trasladar al mismo sitio, por favor verificar otras opciones")
+    }
+    else{
+    const confirmDialog = confirm('¿Deseas conocer el precio del traslado?');
+    if (confirmDialog) {
+      // Crear modal box
+      const modalBox = document.createElement('div');
+      modalBox.classList.add('modal-content');
+      modalBox.innerHTML = `
+      <div class="modal-content">
+        <h2 class="modal-header">Precio del traslado</h2>
+        <div class="modal-body">
+          <label id="ruta"></label><br><br>
+          <label for="vehicle">Vehículo: </label>
+          <select id="vehicle">
+            <option value="BAE-886">BAE-886</option>
+            <option value="BPT-794">BPT-794</option>
+            <option value="D6V-848">D6V-848</option>
+            <option value="F4C-89">F4C-89</option>
+          </select><br><br>
+          <label for="drivers">Cantidad de choferes: </label>
+          <select id="drivers">
+            <option value="1">1 chofer</option>
+            <option value="2">2 choferes</option>
+            <option value="3">3 choferes</option>
+          </select><br><br>
+          <label for="kilometers">Kilómetros: </label>
+          <input id="kilometers" type="text" readonly><br><br>
+          <label for="driverName">Nombre del conductor:</label>
+          <select id="driverName">
+            <option value="Fidel Mondoñedo">Fidel Mondoñedo</option>
+            <option value="Willian De la Cruz">Willian De la Cruz</option>
+            <option value="Pedro Madrid">Pedro Madrid</option>
+          </select><br><br>
+          <label for="store">Almacén: </label>
+          <select id="store">
+            <option value="101">01-LIM EQUIPOS DISPONIBLE EP</option>
+            <option value="102">01-LIM EQUIPOS MANTENIMIENTO EP</option>
+            <option value="131">01-LURIN EQUIPOS DISPONIBLE EP</option>
+            <option value="132">01-LURIN EQUIPOS MANTENI EP</option>
+            <option value="141">01-CHINCHA EQUIPOS DISPONIBLE EP</option>
+            <option value="142">01-CHINCHA EQUIPOS MANTENI EP</option>
+           </select><br><br>
+          <label for="date">Fecha: </label>
+          <input id="date" type="date"><br><br>
+          <label for="equipment">Insumos: </label>
+          <input id="equipment" type="text"><br><br>
+          <label for="Precio">Precio aprox:</label>
+          <input id="Precio" type="text" readonly><br><br>
+          
+        </div>
+        <div class="modal-footer">
+          <button id="sendEmailButton">Enviar por correo</button>
+          <button id="closeButton">Cerrar</button>
+        </div>
+      </div>
+      `;
+    // Obtener el input de kilómetros y el input de precio
+    const kilometersInput = modalBox.querySelector('#kilometers');
+    const precioInput = modalBox.querySelector('#Precio');
+
+    // Calcular la distancia aproximada en función de la sección actual y la opción seleccionada
+    if (section === 'ICARO') {
+      if (opcion.textContent === 'CHINCHA') {
+        kilometersInput.value = '189 Km';
+        precioInput.value = 'S/ 1000';
+      } else if (opcion.textContent === 'LURIN') {
+        kilometersInput.value = '22.7 Km';
+        precioInput.value = 'S/ 119';
+      } else if (opcion.textContent === 'AREQUIPA') {
+        kilometersInput.value = '988 Km';
+        precioInput.value = 'S/ 1500';
+      } else {
+        // Si la opción no coincide con ninguna de las disponibles para ICARO, se deja vacío el input de kilómetros y el input de precio
+        kilometersInput.value = prompt("Ingrese la cantidad de kilometros:");
+        precioInput.value = '';
+      }
+    } else if (section === 'LURIN') {
+      if (opcion.textContent === 'CHINCHA') {
+        kilometersInput.value = '171 Km';
+        precioInput.value = 'S/ 1000';
+      } else if (opcion.textContent === 'ICARO') {
+        kilometersInput.value = '22.7 Km';
+        precioInput.value = 'S/ 119';
+      } else if (opcion.textContent === 'AREQUIPA') {
+        kilometersInput.value = '971 Km';
+        precioInput.value = 'S/ 1500';
+      } else {
+        // Si la opción no coincide con ninguna de las disponibles para LURIN, se deja vacío el input de kilómetros y el input de precio
+        kilometersInput.value = prompt("Ingrese la cantidad de kilometros:");
+        precioInput.value = '';
+      }
+    } else if (section === 'CHINCHA') {
+      if (opcion.textContent === 'ICARO') {
+        kilometersInput.value = '189 Km';
+        precioInput.value = 'S/ 1000';
+      } else if (opcion.textContent === 'LURIN') {
+        kilometersInput.value = '171 Km';
+        precioInput.value = 'S/ 119';
+      } else if (opcion.textContent === 'AREQUIPA') {
+        kilometersInput.value = '809 Km';
+        precioInput.value = 'S/ 1500';
+      } else {
+        // Si la opción no coincide con ninguna de las disponibles para CHINCHA, se deja vacío el input de kilómetros y el input de precio
+        kilometersInput.value = prompt("Ingrese la cantidad de kilometros:");
+        precioInput.value = '';
+      }
+    } else if (section === 'AREQUIPA') {
+      if (opcion.textContent === 'ICARO') {
+        kilometersInput.value = '988 Km';
+        precioInput.value = 'S/ 1000';
+      } else if (opcion.textContent === 'LURIN') {
+        kilometersInput.value = '971 Km';
+        precioInput.value = 'S/ 119';
+      } else if (opcion.textContent === 'CHINCHA') {
+        kilometersInput.value = '809 Km';
+        precioInput.value = 'S/ 1500';
+      } else {
+        // Si la opción no coincide con ninguna de las disponibles para AREQUIPA, se deja vacío el input de kilómetros y el input de precio
+        kilometersInput.value = prompt("Ingrese la cantidad de kilometros:");
+        precioInput.value = '';
+      }
+    } else {
+      // Si la sección no coincide con ninguna de las disponibles, se deja vacío el input de kilómetros y el input de precio
+      kilometersInput.value = prompt("Ingrese la cantidad de kilometros:");
+      precioInput.value = '';
+    }
+     // Actualizar el texto del elemento <label id="ruta"></label>
+     const rutaLabel = modalBox.querySelector('#ruta');
+      if (rutaLabel) {
+          rutaLabel.textContent = `Traslado del ${carName.textContent} de ${section} - ${opcion.textContent}`;
+      }   
+      // Obtener el botón de cerrar y el botón de enviar por correo
+      const closeButton = modalBox.querySelector('#closeButton');
+      const sendEmailButton = modalBox.querySelector('#sendEmailButton');
+      // Evento de clic en el botón de cerrar
+      closeButton.addEventListener('click', () => {
+        modalBox.remove();
+      });
+      // Evento de clic en el botón de enviar por correo
+      sendEmailButton.addEventListener('click', () => {
+        // Obtener los valores de los inputs
+        const sectionsArray = ["ICARO", "LURIN", "CHINCHA", "AREQUIPA"];
+        const DireccionesArray = [icaroSection, lurinSection, chinchaSection,arequipaSection];
+        const sectionIndex = sectionsArray.indexOf(section);
+        const opcionIndex = sectionsArray.indexOf(opcion.textContent);
+        const INICIO = DireccionesArray[sectionIndex];
+        const DESTINO = DireccionesArray[opcionIndex];
+        if (typeof INICIO === "undefined"){
+          // Abrir recuadro para agregar dirección y kilometraje manualmente
+          INICIO = prompt("Ingrese la dirección de inicio:");
+        }
+        if (typeof DESTINO === "undefined"){
+          // Abrir recuadro para agregar dirección y kilometraje manualmente
+          DESTINO = prompt("Ingrese la dirección de destino:");
+        }
+        const vehicle = modalBox.querySelector('#vehicle').value;
+        const drivers = modalBox.querySelector('#drivers').value;
+        const driverName = modalBox.querySelector('#driverName').value;
+        const store = modalBox.querySelector('#store').value;
+        const date = modalBox.querySelector('#date').value;
+        const equipment = carName.textContent+" "+modalBox.querySelector('#equipment').value;
+        // Generar el cuerpo del correo electrónico
+        const subject = "Información del traslado";       
+        const body = `Saludos, a continuación se envía los detalles del traslado del equipo:
+        Inicio:${INICIO}
+        Destino:${DESTINO}
+        Vehículo: ${vehicle}
+        Cantidad de choferes: ${drivers}
+        Nombre del conductor: ${driverName}
+        Almacén: ${store}
+        Fecha: ${date}
+        Equipos: ${equipment}`;  
+        // Generar la URL del correo electrónico con los datos
+        const mailtoUrl = `mailto:eguerrero@energiaperuana.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        // Abrir el enlace de correo electrónico en una nueva pestaña
+        window.open(mailtoUrl, '_blank');
+        // Cerrar el modal box
+        modalBox.remove();
+      });
+
+      // Agregar el modal box al cuerpo del documento
+      document.body.appendChild(modalBox);
+    }
+    const left = parseInt(coordenadas[0]);
+    const top = parseInt(coordenadas[1]);
+    car.style.left = left + 'px';
+    car.style.top = top + 'px'
+  }
+  });
+  });
+  break;
   }
 });
    // Event listener para cerrar el menú al hacer clic fuera de él
@@ -209,6 +495,13 @@ menu.addEventListener('click', (event) => {
     const menuRotacion = document.querySelector('.car-menu-rotacion');
     if (menuRotacion && !menuRotacion.contains(event.target)) {
       menuRotacion.remove();
+    }
+  });
+  document.addEventListener('mousedown', (event) => {
+    // Verificar si el clic fue fuera del menú de rotación
+    const menuTraslacion = document.querySelector('.car-menu-traslacion');
+    if (menuTraslacion && !menuTraslacion.contains(event.target)) {
+      menuTraslacion.remove();
     }
   });
     });
@@ -379,6 +672,7 @@ function guardarEnGoogleSheets() {
 
   for (let i = 0; i < elementos.length; i++) {
     const elemento = elementos[i];
+    const section = getSection(elemento);
     const equipoElemento = elemento.querySelector('h2.car-name');
     const equipo = equipoElemento.textContent.trim();
     const size = parseFloat(elemento.style.width)*115;
@@ -388,10 +682,10 @@ function guardarEnGoogleSheets() {
     const top = elemento.style.top;
     const transform = elemento.style.transform;
     const orientacion = transform !== 'none' ? transform : 'rotate(0deg)';
+
     // Agregar los datos a la lista
-    datos.push([fechaActual,horaActual, equipo, size, lon, color, left, top, orientacion]);
+    datos.push([fechaActual,horaActual, equipo, size, lon, color, left, top, orientacion,section]);
   }
-    console.log(datos)
     enviarDatosAGoogleSheets(datos);
 }
 
@@ -399,7 +693,7 @@ function enviarDatosAGoogleSheets(datos) {
   const fechaHoraActual = new Date();
   const fechaActual = fechaHoraActual.toLocaleDateString('es-ES');
   const horaActual = fechaHoraActual.toLocaleTimeString('es-ES');
-  const range = 'Ubicaciones!A:I';
+  const range = 'Ubicaciones!A:L';
   const request = {
     spreadsheetId: ShID,
     range: range,
@@ -497,10 +791,20 @@ function enviarDatosAGoogleSheets(datos) {
     });
 }
 
-
-
-
-
-
-
-
+function getSection(car) {
+  const sections = document.getElementsByClassName('section');
+  for (let i = 0; i < sections.length; i++) {
+    const section = sections[i];
+    const rect = section.getBoundingClientRect();
+    const carRect = car.getBoundingClientRect();
+    if (
+      carRect.left >= rect.left &&
+      carRect.right <= rect.right &&
+      carRect.top >= rect.top &&
+      carRect.bottom <= rect.bottom
+    ) {
+      return section.id;
+    }
+  }
+  return null;
+}

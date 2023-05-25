@@ -109,7 +109,6 @@ body {
   outline-offset: 80px;
   text-shadow: 1px 1px 6px #fff;
   color: #fff;
-
 }
 #addCarButton:hover {
   background-color: #f4a460;
@@ -304,3 +303,101 @@ select#size-select option:checked {
 #signout_button:hover {
   background-color: orange;
 }
+
+#ICARO {
+  position:absolute;
+  border: 1px solid #000;
+  height: 500px; /* Ajusta la altura de las secciones según tus necesidades */
+  width: 400px; /* Ajusta el ancho de las secciones según tus necesidades */
+  background-color:transparent;
+  margin-bottom: 20px; /* Espacio entre secciones */
+}
+#LURIN {
+  position:absolute;
+  margin-left: 500px;
+  border: 1px solid #000;
+  height: 500px; /* Ajusta la altura de las secciones según tus necesidades */
+  width: 760px; /* Ajusta el ancho de las secciones según tus necesidades */
+  background-color: transparent;
+  margin-bottom: 20px; /* Espacio entre secciones */
+}
+#CHINCHA {
+  position:absolute;
+  margin-top: 600px;
+  border: 1px solid #000;
+  height: 1080px; /* Ajusta la altura de las secciones según tus necesidades */
+  width: 1260px; /* Ajusta el ancho de las secciones según tus necesidades */
+  background-color: transparent;
+  margin-bottom: 20px; /* Espacio entre secciones */
+}
+
+/* Modal Header */
+.modal-header {
+  padding: 10px 16px;
+  background-color: white;
+  color: #f4a460;
+  text-align: center;
+}
+
+/* Modal Body */
+.modal-body {
+  padding: 5px 20px;
+  /* border: 1px solid #000; */
+}
+
+/* Modal Footer */
+.modal-footer {
+  padding: 10px 16px;
+  background-color: white;
+  color: orange;
+  text-align: center;
+  text-decoration:dashed
+}
+
+/* Modal Content */
+.modal-content {
+  position:fixed;
+  background-color: #fefefe; 
+  width: 360px; 
+  bottom: 50px;
+  left: 40%;
+  border: solid #000;
+  z-index: 9999;
+  background-color: #ffffff;
+  margin: auto;
+  border: 1px solid #888;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  animation-name: animatetop;
+  animation-duration: 0.4s
+}
+.modal-footer button {
+  background-color: #fff;
+  border: none;
+  color: #f4a460;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  margin-right: 10px;
+  cursor: pointer;
+  border-radius: 9px;
+  transition: background-color 0.2s ease;
+  font-family: 'Lilita One', sans-serif;
+  border: 1px solid black;
+  transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+  position: relative;
+}
+.modal-footer button:hover {
+  background-color: #f4a460;
+  outline-color: rgba(49, 138, 172, 0);
+  outline-offset: 80px;
+  text-shadow: 1px 1px 6px #fff;
+  color: #fff;
+}
+/* Add Animation
+@keyframes animatetop {
+  from {top: -300px; opacity: 0}
+  to {top: 0; opacity: 1}
+} */
