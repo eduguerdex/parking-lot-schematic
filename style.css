@@ -256,7 +256,34 @@ select#size-select option:checked {
 #buscar-equipo:hover span {
   visibility: visible;
 }
+#sumatoria-costo {
+  position:fixed;
+  bottom:260px;
+  left: 20px;
+  z-index: 9999;
+  background-color: #ffffff;
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.1);
+  font-size: 24px;
+  justify-content: center;
+  align-items: center;
+  width: 50px; /* Ajusta el tamaño del círculo */
+  height: 50px; /* Ajusta el tamaño del círculo */
+}
 
+#sumatoria-costo:hover {
+  visibility: visible;
+  background-color: orange;
+}
+#sumatoria-costo span {
+  visibility: hidden;
+  margin-left: 5px;
+}
+
+#sumatoria-costo:hover span {
+  visibility: visible;
+}
 .selectFecha{
   position:fixed;
   bottom: 95px;
@@ -396,8 +423,8 @@ select#size-select option:checked {
   text-shadow: 1px 1px 6px #fff;
   color: #fff;
 }
-/* Add Animation
+/* Add Animation */
 @keyframes animatetop {
   from {top: -300px; opacity: 0}
   to {top: 0; opacity: 1}
-} */
+}
