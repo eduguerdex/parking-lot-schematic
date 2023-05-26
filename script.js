@@ -264,7 +264,7 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
           // Establecer el estilo del menú de traslación
           const menuTraslacionStyles = `
           position: relative;
-          top: ${car.offsetTop - 1710}px;
+          top: ${car.offsetTop - 1700}px;
           left: ${car.offsetLeft - 200}px;
           color: white;
           padding: 10px;
@@ -615,9 +615,35 @@ function convertirFecha(fecha) {
   const fechaConvertida = `${dia}/${mes}/${anio}`;
   return fechaConvertida;
 }
-
 const ShID = '1Cf2y_StfLyOHigTZF02R3OVyHEPFNNFt00PS6HD5A_k';
-
+function Obtenerequiposconfecha() {
+  // Mostrar cuadro de entrada de fecha
+  var bloqueFecha = document.getElementById("select-fecha");
+  var inputFecha = document.getElementById("fecha");
+  // Obtener la fecha seleccionada
+  var fecha = inputFecha.value;
+  verificarFechaExistente(fecha)
+    .then((fechaExistente) => {
+        if (fecha !== "" && fechaExistente) {
+          // Llamar a la función CargarEquipos() con la fecha seleccionada
+          bloqueFecha.style.visibility = 'hidden';
+          inputFecha.style.visibility = 'hidden';
+          var cars = document.querySelectorAll('.car');
+          cars.forEach(function (car) {
+            car.remove();
+          });
+          ObtenerEquipos(fecha);
+          console.log("Se ha obtenido los equipos de la fecha "+fecha)
+          alert("Se ha obtenido los equipos de la fecha "+fecha)
+        } else {
+          alert("Fecha elegida no disponible, por favor selecciona otra");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Error al verificar la fecha");
+      });
+}
 function ObtenerFecha() {
   // Mostrar cuadro de entrada de fecha
   var bloqueFecha = document.getElementById("select-fecha");
@@ -625,24 +651,6 @@ function ObtenerFecha() {
   // Mostrar el calendario de fecha
   bloqueFecha.style.visibility = 'visible';
   inputFecha.style.visibility = 'visible';
-
-  // Verificar si se ingresó una fecha válida
-  inputFecha.addEventListener("change", function () {
-    // Obtener la fecha seleccionada
-    var fecha = inputFecha.value;
-    // Verificar si se seleccionó una fecha válida
-    if (fecha !== "") {
-      // Llamar a la función CargarEquipos() con la fecha seleccionada
-      bloqueFecha.style.visibility = 'hidden';
-      inputFecha.style.visibility = 'hidden';
-      var cars = document.querySelectorAll('.car');
-      cars.forEach(function (car) {
-        car.remove();
-      });
-      ObtenerUltimaFechaLlenada();
-      ObtenerEquipos(fecha);
-    }
-  });
 }
 
 async function ObtenerEquipos(fecha) {
@@ -872,36 +880,6 @@ async function ObtenerUltimaFechaLlenada() {
   return ultimaFecha;
 }
 
-async function obtenerUltimaFila(nombreEquipo) {
-  try {
-    const response = await gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: ShID,
-      range: 'Ubicaciones!A:I',
-      valueRenderOption: 'UNFORMATTED_VALUE',
-      majorDimension: 'COLUMNS'
-    });
-
-    const values = response.result.values;
-    if (!values || values.length === 0) {
-      console.log('No se encontraron valores en la hoja de cálculo.');
-      return;
-    }
-
-    const columnData = values[2];
-    for (let i = columnData.length - 1; i >= 0; i--) {
-      if (columnData[i] === nombreEquipo) {
-        const ultimaFila = i + 1;
-        console.log(`La última fila para el equipo "${nombreEquipo}" es: ${ultimaFila}`);
-        return ultimaFila;
-      }
-    }
-
-    console.log(`No se encontró el equipo "${nombreEquipo}" en la hoja de cálculo.`);
-  } catch (error) {
-    console.error('Error al obtener la última fila:', error);
-  }
-}
-
 function agregarPropiedades(equipoNombre, costo, ubicacionAnterior, ubicacionActual) {
   const elementos = document.getElementsByClassName('car');
 
@@ -924,14 +902,17 @@ function agregarPropiedades(equipoNombre, costo, ubicacionAnterior, ubicacionAct
 
 function ObtenerSumatoriaCostoDiario() {
   const elementos = document.getElementsByClassName('car');
-  const alurin = 2397.28
-  const aicaro = 948.28
-  const achincha = 7405.79
+  const alurin = 2397.28;
+  const aicaro = 948.28;
+  const achincha = 7405.79;
   let sumatoriaCosto = 0;
   let areasPorSector = {};
+  let equiposPorSeccion = {};
 
   for (let i = 0; i < elementos.length; i++) {
     const elemento = elementos[i];
+    const equipoElemento = elemento.querySelector('h2.car-name');
+    const carName = equipoElemento.textContent.trim();
     const costo = parseFloat(elemento.dataset.costo);
     const sector = getSection(elemento);
 
@@ -939,26 +920,34 @@ function ObtenerSumatoriaCostoDiario() {
       sumatoriaCosto += costo;
     }
 
-    const width = (parseFloat(elemento.style.width)*115)/1000;
-    console.log("width: "+width )
-    const height = (parseFloat(elemento.style.height)*90)/1000;
-    console.log("height: "+height )
-    const area = width*height;
-    console.log("area: "+area )
+    const width = (parseFloat(elemento.style.width) * 115) / 1000;
+    console.log("width: " + width);
+    const height = (parseFloat(elemento.style.height) * 90) / 1000;
+    console.log("height: " + height);
+    const area = width * height;
+    console.log("area: " + area);
 
     if (!areasPorSector[sector]) {
       areasPorSector[sector] = area;
     } else {
       areasPorSector[sector] += area;
     }
+
+    if (!equiposPorSeccion[sector]) {
+      equiposPorSeccion[sector] = [carName];
+    } else {
+      equiposPorSeccion[sector].push(carName);
+    }
   }
 
   console.log('Sumatoria del costo diario:', sumatoriaCosto);
   console.log('Áreas por sector:', areasPorSector);
-  generarModalBox(sumatoriaCosto, areasPorSector)
+  console.log('Equipos por sección:', equiposPorSeccion);
+  generarModalBox(sumatoriaCosto, areasPorSector, equiposPorSeccion);
 }
 
-function generarModalBox(sumatoriaCosto, areasPorSector) {
+
+function generarModalBox(sumatoriaCosto, areasPorSector, equiposPorSeccion) {
   const areasTotales = {
     LURIN: 2397.28,
     ICARO: 948.28,
@@ -987,6 +976,14 @@ function generarModalBox(sumatoriaCosto, areasPorSector) {
             .map(([sector, porcentaje]) => `<li>${sector}: ${porcentaje}%</li>`)
             .join('')}
         </ul>
+          <p>Selecciona un sector:</p>
+          <select id="sectorSelect">
+            ${Object.keys(equiposPorSeccion)
+              .map(sector => `<option value="${sector}">${sector}</option>`)
+              .join('')}
+          </select>
+          <p>Equipos por sector:</p>
+          <ul id="equiposList"></ul>
       </div>
       <div class="modal-footer">
         <button class="close">Cerrar</button>
@@ -999,9 +996,78 @@ function generarModalBox(sumatoriaCosto, areasPorSector) {
 
   // Obtener el botón de cierre
   const closeButton = modalBox.querySelector('.close');
+  const equiposList = document.getElementById('equiposList');
+  const sectorSelect = document.getElementById('sectorSelect');
+
+  sectorSelect.addEventListener('change', function() {
+    const selectedSector = this.value;
+    const equipos = equiposPorSeccion[selectedSector];
+
+    equiposList.innerHTML = equipos.map(equipo => `<li>${equipo}</li>`).join('');
+  });
 
   // Agregar el evento de clic al botón de cierre para cerrar el modal box
   closeButton.addEventListener('click', function() {
     modalBox.remove();
   });
+}
+
+
+function verificarFechaExistente(fecha) {
+  const convFecha=convertirFecha(fecha);
+  return new Promise((resolve, reject) => {
+    gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId: ShID,
+      range: 'Ubicaciones!A:A',
+      majorDimension: 'COLUMNS',
+      valueRenderOption: 'FORMATTED_VALUE',
+      dateTimeRenderOption: 'FORMATTED_STRING'
+    }).then((response) => {
+      const column = response.result;
+      if (!column || !column.values || column.values.length === 0) {
+        console.warn("No values found");
+        resolve(false);
+        return;
+      }
+
+      const fechas = column.values[0];
+      console.log("comparar "+convFecha)
+      console.log(fechas)
+      const fechaExistente = fechas.includes(convFecha);
+      resolve(fechaExistente);
+    }).catch((err) => {
+      console.error(err);
+      reject(err);
+    });
+  });
+}
+
+async function obtenerUltimaFila(nombreEquipo) {
+  try {
+    const response = await gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId: ShID,
+      range: 'Ubicaciones!A:I',
+      valueRenderOption: 'UNFORMATTED_VALUE',
+      majorDimension: 'COLUMNS'
+    });
+
+    const values = response.result.values;
+    if (!values || values.length === 0) {
+      console.log('No se encontraron valores en la hoja de cálculo.');
+      return;
+    }
+
+    const columnData = values[2];
+    for (let i = columnData.length - 1; i >= 0; i--) {
+      if (columnData[i] === nombreEquipo) {
+        const ultimaFila = i + 1;
+        console.log(`La última fila para el equipo "${nombreEquipo}" es: ${ultimaFila}`);
+        return ultimaFila;
+      }
+    }
+
+    console.log(`No se encontró el equipo "${nombreEquipo}" en la hoja de cálculo.`);
+  } catch (error) {
+    console.error('Error al obtener la última fila:', error);
+  }
 }
