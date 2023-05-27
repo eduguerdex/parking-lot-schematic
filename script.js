@@ -29,9 +29,13 @@ document.addEventListener('mousemove', function (e) {
     let section1 = document.getElementById('ICARO');
     let section2 = document.getElementById('LURIN');
     let section3 = document.getElementById('CHINCHA');
+    let section4 = document.getElementById('AREQUIPA');
+    let section5 = document.getElementById('ALQUILER');
     let section1Rect = section1.getBoundingClientRect();
     let section2Rect = section2.getBoundingClientRect();
     let section3Rect = section3.getBoundingClientRect();
+    let section4Rect = section4.getBoundingClientRect();
+    let section5Rect = section5.getBoundingClientRect();
 
     for (let car of cars) {
       if (currentCar === car) continue;
@@ -55,6 +59,10 @@ document.addEventListener('mousemove', function (e) {
         const section2Bottom = section2Rect.bottom + window.pageYOffset;
         const section3Top = section3Rect.top + window.pageYOffset;
         const section3Bottom = section3Rect.bottom + window.pageYOffset;
+        const section4Top = section4Rect.top + window.pageYOffset;
+        const section4Bottom = section4Rect.bottom + window.pageYOffset;
+        const section5Top = section5Rect.top + window.pageYOffset;
+        const section5Bottom = section5Rect.bottom + window.pageYOffset;
 
         if (
           newX >= section1Rect.left &&
@@ -80,7 +88,25 @@ document.addEventListener('mousemove', function (e) {
         ) {
           currentCar.style.left = newX + 'px';
           currentCar.style.top = newY + 'px';
-        } else {
+        } 
+        else if (
+          newX >= section4Rect.left &&
+          newX + currentCar.offsetWidth <= section4Rect.right &&
+          newY >= section4Top &&
+          newY + currentCar.offsetHeight <= section4Bottom
+        ) {
+          currentCar.style.left = newX + 'px';
+          currentCar.style.top = newY + 'px';
+        }
+        else if (
+          newX >= section5Rect.left &&
+          newX + currentCar.offsetWidth <= section5Rect.right &&
+          newY >= section5Top &&
+          newY + currentCar.offsetHeight <= section5Bottom
+        ) {
+          currentCar.style.left = newX + 'px';
+          currentCar.style.top = newY + 'px';
+        }else {
           // El coche está fuera de las secciones, no se permitirá el movimiento
           currentCar.style.left = prevX + 'px';
           currentCar.style.top = prevY + 'px';
@@ -257,8 +283,8 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
             <li class="menu-item-blanco" data-coordenadas="200, 200" value="AV. ICARO 154 URB. LA CAMPIÑA - CHORRILLOS - LIMA">ICARO</li>
             <li class="menu-item-naranja" data-coordenadas="600, 200" value="CAR. EXPLOSIVOS UC..10886 EX FUNDO HUARANGAL - LURIN - LIMA">LURIN</li>
             <li class="menu-item-blanco" data-coordenadas="700, 800" value="CARR PANAMERICANA SUR NRO 204 EL CARMEN-CHINCHA BAJA-ICA">CHINCHA</li>
-            <li class="menu-item-naranja" data-coordenadas="500, 570" value="MZA. G LT 10 SEC. PARQUE INDUSTRIAL RIO SECO I ETAPA-CERRO COLORADO-AREQUIPA">AREQUIPA</li>
-            <li class="menu-item-blanco" data-coordenadas="500, 570">ALQUILER</li>
+            <li class="menu-item-naranja" data-coordenadas="800, 1670" value="MZA. G LT 10 SEC. PARQUE INDUSTRIAL RIO SECO I ETAPA-CERRO COLORADO-AREQUIPA">AREQUIPA</li>
+            <li class="menu-item-blanco" data-coordenadas="200, 1670">ALQUILER</li>
           </ul>
         `;
           // Establecer el estilo del menú de traslación
@@ -308,7 +334,7 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
                         <option value="BAE-886">BAE-886</option>
                         <option value="BPT-794">BPT-794</option>
                         <option value="D6V-848">D6V-848</option>
-                        <option value="F4C-89">F4C-89</option>
+                        <option value="F4C-892">F4C-892</option>
                       </select><br><br>
                       <label for="drivers">Cantidad de choferes: </label>
                       <select id="drivers">
@@ -428,7 +454,7 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
                   // Evento de clic en el botón de guardar
                   saveButton.addEventListener('click', () => {
                     // Obtener los valores de los inputs
-                    const sectionsArray = ["ICARO", "LURIN", "CHINCHA", "AREQUIPA"];
+                    const sectionsArray = ["ICARO", "LURIN", "CHINCHA", "AREQUIPA","ALQUILER"];
                     const DireccionesArray = [icaroSection, lurinSection, chinchaSection, arequipaSection];
                     const sectionIndex = sectionsArray.indexOf(section);
                     const opcionIndex = sectionsArray.indexOf(opcion.textContent);
@@ -458,7 +484,7 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
                   sendEmailButton.addEventListener('click', () => {
                     obtenerUltimaFila(carName.textContent)
                     // Obtener los valores de los inputs
-                    const sectionsArray = ["ICARO", "LURIN", "CHINCHA", "AREQUIPA"];
+                    const sectionsArray = ["ICARO", "LURIN", "CHINCHA", "AREQUIPA","ALQUILER"];
                     const DireccionesArray = [icaroSection, lurinSection, chinchaSection, arequipaSection];
                     const sectionIndex = sectionsArray.indexOf(section);
                     const opcionIndex = sectionsArray.indexOf(opcion.textContent);
@@ -697,7 +723,7 @@ async function ObtenerEquipos(fecha) {
     let orientation = row[8];
     let costo = row[11];
     addCar(color, size, lon, carText, left, top, orientation,costo);
-    contentElement.innerText += equipo + '\n';
+    // contentElement.innerText += equipo + '\n';
   });
 }
 
@@ -951,7 +977,9 @@ function generarModalBox(sumatoriaCosto, areasPorSector, equiposPorSeccion) {
   const areasTotales = {
     LURIN: 2397.28,
     ICARO: 948.28,
-    CHINCHA: 7405.79
+    CHINCHA: 7405.79,
+    AREQUIPA: 2079,
+    ALQUILER: 10000
   };
 
   // Calcular y mostrar el porcentaje ocupado por sector
