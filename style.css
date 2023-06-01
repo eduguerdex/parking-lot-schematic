@@ -203,6 +203,13 @@ select#size-select option:checked {
   cursor: pointer;
 }
 
+#espacio {
+  position:static;
+  border: 5px solid #000;
+  height: 30px; /* Ajusta la altura de las secciones según tus necesidades */
+  width: 100%; /* Ajusta el ancho de las secciones según tus necesidades */
+  background-color: transparent;
+}
 
 .boton {
   position: fixed;
@@ -333,47 +340,48 @@ select#size-select option:checked {
 
 #ICARO {
   position:absolute;
+  margin-top: 20px;
   border: 1px solid #000;
-  height: 450px; /* Ajusta la altura de las secciones según tus necesidades */
+  height: 675px; /* Ajusta la altura de las secciones según tus necesidades */
   width: 400px; /* Ajusta el ancho de las secciones según tus necesidades */
   background-color:transparent;
   margin-bottom: 20px; /* Espacio entre secciones */
 }
 #LURIN {
   position:absolute;
+  margin-top: 80px;
   margin-left: 500px;
   border: 1px solid #000;
   height: 400px; /* Ajusta la altura de las secciones según tus necesidades */
-  width: 760px; /* Ajusta el ancho de las secciones según tus necesidades */
+  width: 730px; /* Ajusta el ancho de las secciones según tus necesidades */
   background-color: transparent;
   margin-bottom: 20px; /* Espacio entre secciones */
 }
 #CHINCHA {
   position:absolute;
-  margin-top: 500px;
-  border: 1px solid #000;
-  height: 1020px; /* Ajusta la altura de las secciones según tus necesidades */
-  width: 1260px; /* Ajusta el ancho de las secciones según tus necesidades */
+  margin-top: 700px;
+  border: 1px solid #cf660a;
+  height: 1010px; /* Ajusta la altura de las secciones según tus necesidades */
+  width: 1250px; /* Ajusta el ancho de las secciones según tus necesidades */
   background-color: transparent;
-  margin-bottom: 20px; /* Espacio entre secciones */
 }
 #AREQUIPA {
   position:absolute;
-  margin-top: 1520px;
+  margin-top: 1750px;
   margin-left: 500px;
   border: 1px solid #000;
-  height: 760px; /* Ajusta la altura de las secciones según tus necesidades */
-  width: 760px; /* Ajusta el ancho de las secciones según tus necesidades */
+  height: 750px; /* Ajusta la altura de las secciones según tus necesidades */
+  width: 700px; /* Ajusta el ancho de las secciones según tus necesidades */
   background-color: transparent;
   margin-bottom: 20px; /* Espacio entre secciones */
 }
 #ALQUILER {
   position:absolute;
-  margin-top: 1520px;
+  margin-top: 1750px;
   border: 1px solid #000;
-  height: 760px; /* Ajusta la altura de las secciones según tus necesidades */
+  height: 750px; /* Ajusta la altura de las secciones según tus necesidades */
   width: 500px; /* Ajusta el ancho de las secciones según tus necesidades */
-  background-color: transparent;
+  background-color:transparent;
   margin-bottom: 20px; /* Espacio entre secciones */
 }
 
@@ -405,7 +413,7 @@ select#size-select option:checked {
   position:fixed;
   background-color: #fefefe; 
   width: 360px; 
-  bottom: 50px;
+  bottom: 0px;
   left: 40%;
   border: solid #000;
   z-index: 9999;
@@ -446,4 +454,23 @@ select#size-select option:checked {
 @keyframes animatetop {
   from {top: -300px; opacity: 0}
   to {top: 0; opacity: 1}
+}
+
+.equipos-container {
+  display: flex;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.equipos-list {
+  display: flex;
+  flex-wrap: nowrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.equipos-column {
+  flex: 0 0 33.33%;
+  padding: 0 10px;
 }

@@ -227,7 +227,7 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
           position: relative;
           height: 200px;
           width: 200px;
-          top: ${car.offsetTop - 1815}px;
+          top: ${car.offsetTop - 2565}px;
           left: ${car.offsetLeft - 110}px;
           color: white;
           padding: 10px;
@@ -290,7 +290,7 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
           // Establecer el estilo del menú de traslación
           const menuTraslacionStyles = `
           position: relative;
-          top: ${car.offsetTop - 1700}px;
+          top: ${car.offsetTop - 2450}px;
           left: ${car.offsetLeft - 200}px;
           color: white;
           padding: 10px;
@@ -632,7 +632,10 @@ window.addEventListener('DOMContentLoaded', () => {
 function convertirFecha(fecha) {
   const fechaString = fecha.toString(); // Convertir a cadena de texto
   const partes = fechaString.split('-');
-  const dia = partes[2];
+  let dia = partes[2];
+  if (dia.startsWith('0')) {
+    dia = dia.substring(1);
+  }
   let mes = partes[1];
   if (mes.startsWith('0')) {
     mes = mes.substring(1);
@@ -976,68 +979,94 @@ function ObtenerSumatoriaCostoDiario() {
 function generarModalBox(sumatoriaCosto, areasPorSector, equiposPorSeccion) {
   const areasTotales = {
     LURIN: 2397.28,
-    ICARO: 948.28,
+    ICARO: 930.28,
     CHINCHA: 7405.79,
     AREQUIPA: 2079,
     ALQUILER: 10000
   };
 
-  // Calcular y mostrar el porcentaje ocupado por sector
-  const porcentajesOcupados = {};
-  Object.entries(areasPorSector).forEach(([sector, area]) => {
-    const areaTotal = areasTotales[sector];
-    const porcentajeOcupado = (area / areaTotal) * 100;
-    porcentajesOcupados[sector] = porcentajeOcupado.toFixed(2);
-  });
+ // Calcular y mostrar el porcentaje ocupado por sector
+ const porcentajesOcupados = {};
+ Object.entries(areasPorSector).forEach(([sector, area]) => {
+   const areaTotal = areasTotales[sector];
+   const porcentajeOcupado = (area / areaTotal) * 100;
+   porcentajesOcupados[sector] = porcentajeOcupado.toFixed(2);
+ });
 
-  // Crear el elemento modalBox
-  const modalBox = document.createElement('div');
-  modalBox.classList.add('modal-content');
-  modalBox.innerHTML = `
-    <div class="modal-content">
-      <h2 class="modal-header">Resumen de Costos Diarios</h2>
-      <div class="modal-body">
-        <p>Sumatoria del costo diario: ${sumatoriaCosto}</p>
-        <p>Áreas por sector:</p>
-        <ul>
-          ${Object.entries(porcentajesOcupados)
-            .map(([sector, porcentaje]) => `<li>${sector}: ${porcentaje}%</li>`)
-            .join('')}
-        </ul>
-          <p>Selecciona un sector:</p>
-          <select id="sectorSelect">
-            ${Object.keys(equiposPorSeccion)
-              .map(sector => `<option value="${sector}">${sector}</option>`)
-              .join('')}
-          </select>
-          <p>Equipos por sector:</p>
-          <ul id="equiposList"></ul>
-      </div>
-      <div class="modal-footer">
-        <button class="close">Cerrar</button>
-      </div>
-    </div>
-  `;
+ // Obtener el total de equipos por sector
+ const totalEquiposPorSector = {};
+ Object.entries(equiposPorSeccion).forEach(([sector, equipos]) => {
+   totalEquiposPorSector[sector] = equipos.length;
+ });
 
-  // Agregar el elemento modalBox al documento
-  document.body.appendChild(modalBox);
+ // Crear el elemento modalBox
+ const modalBox = document.createElement('div');
+ modalBox.classList.add('modal-content');
+ modalBox.innerHTML = `
+ <div class="modal-content">
+   <h2 class="modal-header">Resumen de Costos Diarios</h2>
+   <div class="modal-body">
+     <p>Sumatoria del costo diario: ${sumatoriaCosto}</p>
+     <p>Áreas por sector:</p>
+     <ul>
+       ${Object.entries(porcentajesOcupados)
+         .map(([sector, porcentaje]) => `<li>${sector}: ${porcentaje}%</li>`)
+         .join('')}
+     </ul>
+     <p>Selecciona un sector:</p>
+     <select id="sectorSelect">
+       ${Object.keys(equiposPorSeccion)
+         .map(sector => `<option value="${sector}">${sector}</option>`)
+         .join('')}
+     </select>
+     <ul id="totalEquiposList" class="total-equipos-list"></ul>
+     <div class="equipos-container">
+       <ul id="equiposList" class="equipos-list"></ul>
+     </div>
+   </div>
+   <div class="modal-footer">
+     <button class="close">Cerrar</button>
+   </div>
+ </div>
+`;
 
-  // Obtener el botón de cierre
-  const closeButton = modalBox.querySelector('.close');
-  const equiposList = document.getElementById('equiposList');
-  const sectorSelect = document.getElementById('sectorSelect');
+ // Agregar el elemento modalBox al documento
+ document.body.appendChild(modalBox);
 
-  sectorSelect.addEventListener('change', function() {
-    const selectedSector = this.value;
-    const equipos = equiposPorSeccion[selectedSector];
+ // Obtener el botón de cierre
+ const closeButton = modalBox.querySelector('.close');
+ const equiposList = document.getElementById('equiposList');
+ const sectorSelect = document.getElementById('sectorSelect');
+ const totalEquiposList = document.getElementById('totalEquiposList');
 
-    equiposList.innerHTML = equipos.map(equipo => `<li>${equipo}</li>`).join('');
-  });
+ sectorSelect.addEventListener('change', function() {
+   const selectedSector = this.value;
+   const equipos = equiposPorSeccion[selectedSector];
+   const totalEquipos = equipos.length;
 
+   equiposList.innerHTML = '';
+   const columnCount = 4;
+   const equiposPerColumn = Math.ceil(equipos.length / columnCount);
+
+   for (let i = 0; i < columnCount; i++) {
+     const column = document.createElement('ul');
+     column.classList.add('equipos-column');
+
+     for (let j = i * equiposPerColumn; j < (i + 1) * equiposPerColumn && j < equipos.length; j++) {
+       const equipo = equipos[j];
+       const listItem = document.createElement('li');
+       listItem.textContent = equipo;
+       column.appendChild(listItem);
+     }
+
+     equiposList.appendChild(column);
+   }
+   totalEquiposList.innerHTML = `<li>En ${selectedSector} hay ${totalEquipos} equipos</li>`;
+ });
   // Agregar el evento de clic al botón de cierre para cerrar el modal box
-  closeButton.addEventListener('click', function() {
-    modalBox.remove();
-  });
+ closeButton.addEventListener('click', function() {
+   modalBox.remove();
+ });
 }
 
 
