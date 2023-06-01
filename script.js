@@ -376,72 +376,55 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
                   // Obtener el input de kilómetros y el input de precio
                   const kilometersInput = modalBox.querySelector('#kilometers');
                   const precioInput = modalBox.querySelector('#Precio');
-
+                  const vehicle = modalBox.querySelector('#vehicle');
                   // Calcular la distancia aproximada en función de la sección actual y la opción seleccionada
                   if (section === 'ICARO') {
                     if (opcion.textContent === 'CHINCHA') {
                       kilometersInput.value = '189 Km';
-                      precioInput.value = 1000;
                     } else if (opcion.textContent === 'LURIN') {
                       kilometersInput.value = '22.7 Km';
-                      precioInput.value = 119;
                     } else if (opcion.textContent === 'AREQUIPA') {
                       kilometersInput.value = '988 Km';
-                      precioInput.value = 1500;
                     } else {
                       // Si la opción no coincide con ninguna de las disponibles para ICARO, se deja vacío el input de kilómetros y el input de precio
                       kilometersInput.value = prompt("Ingrese la cantidad de kilometros:");
-                      precioInput.value = '';
                     }
                   } else if (section === 'LURIN') {
                     if (opcion.textContent === 'CHINCHA') {
                       kilometersInput.value = '171 Km';
-                      precioInput.value = 1000;
                     } else if (opcion.textContent === 'ICARO') {
                       kilometersInput.value = '22.7 Km';
-                      precioInput.value = 119;
                     } else if (opcion.textContent === 'AREQUIPA') {
                       kilometersInput.value = '971 Km';
-                      precioInput.value = 1500;
                     } else {
                       // Si la opción no coincide con ninguna de las disponibles para LURIN, se deja vacío el input de kilómetros y el input de precio
                       kilometersInput.value = prompt("Ingrese la cantidad de kilometros:");
-                      precioInput.value = '';
                     }
                   } else if (section === 'CHINCHA') {
                     if (opcion.textContent === 'ICARO') {
                       kilometersInput.value = '189 Km';
-                      precioInput.value = 1000;
                     } else if (opcion.textContent === 'LURIN') {
                       kilometersInput.value = '171 Km';
-                      precioInput.value = 119;
                     } else if (opcion.textContent === 'AREQUIPA') {
                       kilometersInput.value = '809 Km';
-                      precioInput.value = 1500;
                     } else {
                       // Si la opción no coincide con ninguna de las disponibles para CHINCHA, se deja vacío el input de kilómetros y el input de precio
                       kilometersInput.value = prompt("Ingrese la cantidad de kilometros:");
-                      precioInput.value = '';
                     }
                   } else if (section === 'AREQUIPA') {
                     if (opcion.textContent === 'ICARO') {
                       kilometersInput.value = '988 Km';
-                      precioInput.value = 1000;
                     } else if (opcion.textContent === 'LURIN') {
                       kilometersInput.value = '971 Km';
-                      precioInput.value = 119;
                     } else if (opcion.textContent === 'CHINCHA') {
                       kilometersInput.value = '809 Km';
-                      precioInput.value = 1500;
                     } else {
                       // Si la opción no coincide con ninguna de las disponibles para AREQUIPA, se deja vacío el input de kilómetros y el input de precio
                       kilometersInput.value = prompt("Ingrese la cantidad de kilometros:");
-                      precioInput.value = '';
                     }
                   } else {
                     // Si la sección no coincide con ninguna de las disponibles, se deja vacío el input de kilómetros y el input de precio
                     kilometersInput.value = prompt("Ingrese la cantidad de kilometros:");
-                    precioInput.value = '';
                   }
                   // Actualizar el texto del elemento <label id="ruta"></label>
                   const rutaLabel = modalBox.querySelector('#ruta');
@@ -1128,3 +1111,4 @@ async function obtenerUltimaFila(nombreEquipo) {
     console.error('Error al obtener la última fila:', error);
   }
 }
+
