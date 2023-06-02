@@ -2,6 +2,7 @@ const icaroSection = "AV. ICARO 154 URB. LA CAMPIÑA - CHORRILLOS - LIMA";
 const lurinSection = "CAR. EXPLOSIVOS UC..10886 EX FUNDO HUARANGAL - LURIN - LIMA";
 const chinchaSection = "CARR PANAMERICANA SUR NRO 204 EL CARMEN-CHINCHA BAJA-ICA";
 const arequipaSection = "MZA. G LT 10 SEC. PARQUE INDUSTRIAL RIO SECO I ETAPA-CERRO COLORADO-AREQUIPA"
+
 let cars = document.querySelectorAll('.car');
 let carsContainer = document.querySelector('#cars-container');
 let currentCar = null;
@@ -221,14 +222,18 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
           `;
           // Definir el radio del menú
           const radio = 70;
-
+          // Obtener las dimensiones del contenedor padre o del elemento de referencia
+          const offsetPercentage = `${((car.offsetTop - window.scrollY) / window.innerHeight) * 100}%`;
+          // Calcular el desplazamiento horizontal en porcentaje
+          const leftPercentage = `${((car.offsetLeft - window.scrollX) / window.innerWidth) * 100}%`;
+          console.log(offsetPercentage);
           // Establecer el estilo del menú de rotación
           const menuRotacionStyles = `
           position: relative;
           height: 200px;
           width: 200px;
-          top: ${car.offsetTop - 2565}px;
-          left: ${car.offsetLeft - 110}px;
+          top: ${offsetPercentage};
+          left: ${leftPercentage};
           color: white;
           padding: 10px;
           z-index: 999;
@@ -363,9 +368,7 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
                       <input id="date" type="date"><br><br>
                       <label for="equipment">Insumos: </label>
                       <input id="equipment" type="text"><br><br>
-                      <label for="Precio">Precio aprox en S/:</label>
-                      <input id="Precio" type="text" readonly><br><br>
-                      
+                      <ul id="Precio" class="precio_transporte"></ul>                      
                     </div>
                     <div class="modal-footer">
                       <button id="sendEmailButton">Enviar por correo</button>
@@ -376,7 +379,6 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
                   // Obtener el input de kilómetros y el input de precio
                   const kilometersInput = modalBox.querySelector('#kilometers');
                   const precioInput = modalBox.querySelector('#Precio');
-                  const vehicle = modalBox.querySelector('#vehicle');
                   // Calcular la distancia aproximada en función de la sección actual y la opción seleccionada
                   if (section === 'ICARO') {
                     if (opcion.textContent === 'CHINCHA') {
@@ -508,8 +510,121 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
                     // guardar el modal box
                     modalBox.remove();
                   });
-
+                  const vehicleSelector = modalBox.querySelector('#vehicle');           
                   // Agregar el modal box al cuerpo del documento
+                  const precios = document.getElementById('Precio');
+                  const driversSelect = modalBox.querySelector('#drivers');
+
+                  vehicleSelector.addEventListener('change', function() {
+                     const selectedVehicle= this.value;
+                     const MANO_DE_OBRA = 2000;
+                     const GPS = 66.63;
+                     const PRECIO_D2 = 13.8;
+                     const VIDA_UTIL_VEHICULO = 420000;
+                     const FACTOR_TRABAJO = 10400;
+                     const costosVariables = {
+                        'BAE-886': {
+                          mantenimiento: 0.091706205,
+                          neumaticos: 0.3194368,
+                          consumo: 5,
+                          factor: 2.76,
+                          depreciacion: 0.903430181,
+                          seg: 160
+                        },
+                        'BPT-794': {
+                          mantenimiento: 0.23465613,
+                          neumaticos: 0.3194368,
+                          consumo: 5,
+                          factor: 2.76,
+                          depreciacion: 0.699047619,
+                          seg: 160
+                        },
+                        'F4C-892': {
+                          mantenimiento: 0.19226029,
+                          neumaticos: 0.309253798,
+                          consumo: 4.5,
+                          factor: 3.066666667,
+                          depreciacion: 0.49984867,
+                          seg: 160
+                        },
+                        'D6V-848': {
+                          mantenimiento: 0.153549864,
+                          neumaticos: 0.089572956,
+                          consumo: 6,
+                          factor: 2.3,
+                          depreciacion: 0.393214286,
+                          seg: 160
+                        }
+                      };
+                      const kilometers = parseFloat(kilometersInput.value);
+                      const drivers = parseInt(driversSelect.value);
+                      const precioLabel = document.querySelector('.precio_transporte');
+                      if (costosVariables.hasOwnProperty(selectedVehicle) && !isNaN(kilometers)) {
+                        const costoVariable = costosVariables[selectedVehicle];
+                        const costovariado = (costoVariable.mantenimiento + costoVariable.neumaticos + costoVariable.consumo + costoVariable.factor + costoVariable.depreciacion) * kilometers;
+                        const costoFijo = ((MANO_DE_OBRA * drivers) + costoVariable.seg + GPS)/FACTOR_TRABAJO;
+                        const precioAproximado = costoFijo+costovariado;
+                        precioLabel.textContent = `Precio aprox en S/: ${precioAproximado.toFixed(2)}`;
+                      } else {
+                        precioInput.value = '';
+                      }
+                  });
+                  driversSelect.addEventListener('change', function() {
+                    const selectedVehicle = vehicleSelector.value;
+                    const MANO_DE_OBRA = 2000;
+                    const GPS = 66.63;
+                    const PRECIO_D2 = 13.8;
+                    const VIDA_UTIL_VEHICULO = 420000;
+                    const FACTOR_TRABAJO = 10400;
+                    const costosVariables = {
+                      'BAE-886': {
+                        mantenimiento: 0.091706205,
+                        neumaticos: 0.3194368,
+                        consumo: 5,
+                        factor: 2.76,
+                        depreciacion: 0.903430181,
+                        seg: 160
+                      },
+                      'BPT-794': {
+                        mantenimiento: 0.23465613,
+                        neumaticos: 0.3194368,
+                        consumo: 5,
+                        factor: 2.76,
+                        depreciacion: 0.699047619,
+                        seg: 160
+                      },
+                      'F4C-892': {
+                        mantenimiento: 0.19226029,
+                        neumaticos: 0.309253798,
+                        consumo: 4.5,
+                        factor: 3.066666667,
+                        depreciacion: 0.49984867,
+                        seg: 160
+                      },
+                      'D6V-848': {
+                        mantenimiento: 0.153549864,
+                        neumaticos: 0.089572956,
+                        consumo: 6,
+                        factor: 2.3,
+                        depreciacion: 0.393214286,
+                        seg: 160
+                      }
+                    };
+                  
+                    const kilometers = parseFloat(kilometersInput.value);
+                    const drivers = parseInt(driversSelect.value);
+                    const precioLabel = document.querySelector('.precio_transporte');
+                  
+                    if (costosVariables.hasOwnProperty(selectedVehicle) && !isNaN(kilometers) && !isNaN(drivers)) {
+                      const costoVariable = costosVariables[selectedVehicle];
+                      const costovariado = (costoVariable.mantenimiento + costoVariable.neumaticos + costoVariable.consumo + costoVariable.factor + costoVariable.depreciacion) * kilometers;
+                      const costoFijo = ((MANO_DE_OBRA * drivers) + costoVariable.seg + GPS) / FACTOR_TRABAJO;
+                      const precioAproximado = costoFijo + costovariado;
+                      precioLabel.textContent = `Precio aprox en S/: ${precioAproximado.toFixed(2)}`;
+                    } else {
+                      precioLabel.textContent = '';
+                    }
+                  });
                   document.body.appendChild(modalBox);
                 }
                 const left = parseInt(coordenadas[0]);

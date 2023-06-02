@@ -206,7 +206,7 @@ select#size-select option:checked {
 #espacio {
   position:static;
   border: 5px solid #000;
-  height: 30px; /* Ajusta la altura de las secciones según tus necesidades */
+  height: 80px; /* Ajusta la altura de las secciones según tus necesidades */
   width: 100%; /* Ajusta el ancho de las secciones según tus necesidades */
   background-color: transparent;
 }
@@ -338,51 +338,55 @@ select#size-select option:checked {
   background-color: orange;
 }
 
+#cars-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.section {
+  position: absolute;
+  background-color: transparent;
+  border: 1px solid black;
+}
+
 #ICARO {
-  position:absolute;
-  margin-top: 20px;
-  border: 1px solid #000;
-  height: 675px; /* Ajusta la altura de las secciones según tus necesidades */
-  width: 400px; /* Ajusta el ancho de las secciones según tus necesidades */
-  background-color:transparent;
-  margin-bottom: 20px; /* Espacio entre secciones */
+  top: 20px;
+  left: 0;
+  height: 29%;
+  width: 28%;
+  margin-bottom: 20px;
 }
+
 #LURIN {
-  position:absolute;
-  margin-top: 80px;
-  margin-left: 500px;
-  border: 1px solid #000;
-  height: 400px; /* Ajusta la altura de las secciones según tus necesidades */
-  width: 730px; /* Ajusta el ancho de las secciones según tus necesidades */
-  background-color: transparent;
-  margin-bottom: 20px; /* Espacio entre secciones */
+  top: 80px;
+  left: 44%;
+  height: 17%;
+  width: 55%;
+  margin-bottom: 20px;
 }
+
 #CHINCHA {
-  position:absolute;
-  margin-top: 700px;
-  border: 1px solid #cf660a;
-  height: 1010px; /* Ajusta la altura de las secciones según tus necesidades */
-  width: 1250px; /* Ajusta el ancho de las secciones según tus necesidades */
-  background-color: transparent;
+  top: 31%;
+  left: 0%;
+  height: 39%;
+  width: 98%;
 }
+
 #AREQUIPA {
-  position:absolute;
-  margin-top: 1750px;
-  margin-left: 500px;
-  border: 1px solid #000;
-  height: 750px; /* Ajusta la altura de las secciones según tus necesidades */
-  width: 700px; /* Ajusta el ancho de las secciones según tus necesidades */
-  background-color: transparent;
-  margin-bottom: 20px; /* Espacio entre secciones */
+  top: 72%;
+  left: 42%;
+  height: 28%;
+  width: 52%;
+  margin-bottom: 20px;
 }
+
 #ALQUILER {
-  position:absolute;
-  margin-top: 1750px;
-  border: 1px solid #000;
-  height: 750px; /* Ajusta la altura de las secciones según tus necesidades */
-  width: 500px; /* Ajusta el ancho de las secciones según tus necesidades */
-  background-color:transparent;
-  margin-bottom: 20px; /* Espacio entre secciones */
+  top: 70%;
+  left: 0%;
+  height: 30%;
+  width: 40%;
+  margin-bottom: 20px;
 }
 
 /* Modal Header */
