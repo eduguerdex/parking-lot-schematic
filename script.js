@@ -146,6 +146,7 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
   carName.textContent = carText.split('-')[0];
   car.appendChild(carName);
   carsContainer.appendChild(car)
+  
   // Agregar controlador del evento mousedown al nuevo bloque .car
   car.addEventListener('mousedown', function (e) {
     currentCar = car;
@@ -210,6 +211,7 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
           // Crear el menú de rotación
           const menuRotacion = document.createElement('div');
           menuRotacion.classList.add('car-menu-rotacion');
+          menuRotacion.style.transform = `rotate(-${rotation}deg)`; // Establecer la propiedad transform
           menuRotacion.innerHTML = `
           <ul class="car-menu-horizontal">
           <li class="menu-item-blanco" data-angulo="0"><i class="fas fa-angle-right"></i>0°</li>
@@ -223,17 +225,18 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
           // Definir el radio del menú
           const radio = 70;
           // Obtener las dimensiones del contenedor padre o del elemento de referencia
-          const offsetPercentage = `${((car.offsetTop - window.scrollY) / window.innerHeight) * 100}%`;
+          const offsetcant = car.offsetTop-2*radio+16;
+          const letsetcant = car.offsetLeft-2*radio+16;
+          console.log(offsetcant)
           // Calcular el desplazamiento horizontal en porcentaje
           const leftPercentage = `${((car.offsetLeft - window.scrollX) / window.innerWidth) * 100}%`;
-          console.log(offsetPercentage);
           // Establecer el estilo del menú de rotación
           const menuRotacionStyles = `
-          position: relative;
+          position: absolute;
           height: 200px;
           width: 200px;
-          top: ${offsetPercentage};
-          left: ${leftPercentage};
+          top: ${offsetcant}px;
+          left: ${letsetcant}px;
           color: white;
           padding: 10px;
           z-index: 999;
@@ -292,11 +295,13 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
             <li class="menu-item-blanco" data-coordenadas="200, 1670">ALQUILER</li>
           </ul>
         `;
+          const offlsetcant = car.offsetTop;
+          const letlsetcant = car.offsetLeft-200;
           // Establecer el estilo del menú de traslación
           const menuTraslacionStyles = `
-          position: relative;
-          top: ${car.offsetTop - 2450}px;
-          left: ${car.offsetLeft - 200}px;
+          position: absolute;
+          top: ${offlsetcant}px;
+          left: ${letlsetcant}px;
           color: white;
           padding: 10px;
           z-index: 999;
@@ -630,7 +635,7 @@ function addCar(color, size, lon, carText, left, top, orientacion,costo) {
                 const left = parseInt(coordenadas[0]);
                 const top = parseInt(coordenadas[1]);
                 car.style.left = left + 'px';
-                car.style.top = top + 'px'
+                car.style.top = top + 'px';
               }
             });
           });
